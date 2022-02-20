@@ -21,3 +21,48 @@ body {
   font-weight: 700;
   font-size: 20px;
 }
+
+h2 {
+  font-size: 30px;
+  margin: 0;
+  margin-left: 10px;
+}
+
+p {
+  font-weight: 700;
+}
+
+span {
+  font-weight: 400;
+  color: #a58282;
+}
+
+ul {
+  padding: 0;
+  list-style: decimal;
+}
+
+li {
+  margin-left: 20px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.lang {
+  margin-bottom: 0;
+}
+
+.languages-list {
+  margin-top: 0;
+}
+
+.countries-item {
+  list-style: none;
+}
+
+.countries-title {
+  margin-left: 15px;
+}

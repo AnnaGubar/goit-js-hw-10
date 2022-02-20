@@ -1,9 +1,15 @@
-<div>
+<div class='flex'>
+  <img src='{{flags.svg}}' alt='flag' width='30' height='30' />
   <h2>{{name.official}}</h2>
-  <p>{{capital}}</p>
-  <p>{{population}}</p>
-  {{!-- <img src="{{flags.svg}}" alt="flag">
-  <ul>
-    <li>{{languages}}</li>
-  </ul> --}}
+</div>
+<div>
+  <p>Capital: <span>{{capital}}</span></p>
+  <p>Population: <span>{{population}}</span></p>
+  <p>Languages: <span>{{languages}}</span></p>
+  <p class='lang'>Languages:</p>
+  <ul class='languages-list'>
+    {{#each languages}}
+      <li><span>{{this}}</span></li>
+    {{/each}}
+  </ul>
 </div>
