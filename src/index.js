@@ -2,15 +2,8 @@ import debounce from 'lodash.debounce';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import countryCardTpl from '../src/templates/country.hbs';
 import countriesCardTpl from '../src/templates/countries.hbs';
+import { inputRef, countryListRef, countryRef, DEBOUNCE_DELAY, BASE_URL } from './js/start-data.js';
 import './css/styles.css';
-
-// import * as k from './js/js.js';
-
-const inputRef = document.querySelector('#search-box');
-const countryListRef = document.querySelector('.country-list');
-const countryRef = document.querySelector('.country-info');
-const DEBOUNCE_DELAY = 300;
-const BASE_URL = 'https://restcountries.com/v3.1/name/';
 
 inputRef.addEventListener('input', debounce(inputHandler, DEBOUNCE_DELAY));
 
@@ -22,47 +15,64 @@ function inputHandler(e) {
 
   if (inputValue.length === 0) {
     Notify.info(`Enter something`);
-    countryListRef.innerHTML = '';
+    clearCountryListCard();
+    clearCountryCard();
   }
 
-  if (inputValue.length >= 1) {
-    fetch(`${BASE_URL}${inputValue}`)
-      .then(res => {
-        if (!res.ok) {
-          Notify.info(`There is nothing like that`);
-          countryListRef.innerHTML = '';
-          return res.json().then(error => Promise.reject(error));
-        }
-        return res.json();
-      })
-      .then(countries => {
-        console.log(`found ${countries.length} match(-es) ✔`);
+  fetch(`${BASE_URL}${inputValue}`)
+    .then(res => {
+      if (!res.ok) {
+        Notify.info(`Oops, there is no country with that name`);
+        clearCountryListCard();
 
-        if (countries.length > 10) {
-          Notify.info(`Too many matches found. Please enter a more specific name.`);
-          countryListRef.innerHTML = '';
-          return;
-        }
+        // throw Error(`is not ok: ` + res.status);
+        return res.json().then(error => Promise.reject(error));
+      }
+      return res.json();
+    })
+    .then(countries => renderRequest(countries))
+    .catch(error => {
+      clearCountryCard();
+      console.log(error);
+    });
+}
 
-        if (countries.length >= 2) {
-          countryRef.innerHTML = '';
+function renderRequest(countries) {
+  console.log(`FOUND ${countries.length} match(-es) ✔`);
 
-          console.group('⬇ List of found countries');
-          countries.map(country => console.log(country.name.official));
-          console.groupEnd();
+  if (countries.length > 10) {
+    Notify.info(`Too many matches found. Please enter a more specific name.`);
 
-          countryListRef.innerHTML = countriesCardTpl(countries);
-        }
+    clearCountryListCard();
+    return;
+  }
 
-        if (countries.length === 1) {
-          console.log('👉🏻', countries[0].name.official);
-          countryListRef.innerHTML = '';
-          countryRef.innerHTML = countryCardTpl(countries[0]);
-        }
-      })
-      .catch(error => console.log(error));
+  if (countries.length > 1) {
+    clearCountryCard();
+    countryListRef.innerHTML = countriesCardTpl(countries);
+
+    console.group('⬇ List of found countries');
+    countries.map(country => console.log(country.name.official));
+    console.groupEnd();
+  }
+
+  if (countries.length === 1) {
+    clearCountryListCard();
+    countryRef.innerHTML = countryCardTpl(countries[0]);
+
+    console.log('👉🏻', countries[0].name.official);
   }
 }
+
+function clearCountryListCard() {
+  countryListRef.innerHTML = '';
+}
+
+function clearCountryCard() {
+  countryRef.innerHTML = '';
+}
+
+// варианты отрисовки
 
 // function x([...countries]) {
 //   countries.map(country => {
