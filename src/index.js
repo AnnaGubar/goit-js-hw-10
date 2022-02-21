@@ -1,9 +1,21 @@
 import debounce from 'lodash.debounce';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import Notiflix from 'notiflix';
 import countryCardTpl from '../src/templates/country.hbs';
 import countriesCardTpl from '../src/templates/countries.hbs';
 import { inputRef, countryListRef, countryRef, DEBOUNCE_DELAY, BASE_URL } from './js/start-data.js';
 import './css/styles.css';
+
+
+Notiflix.Notify.init({
+  width: '360px',
+  fontSize: '17px',
+
+  titleColor: '#fff',
+  textColor: '#fff',
+  messageColor: '#fff',
+  backgroundColor: '#32c682',
+  background: '#32c682',
+});
 
 inputRef.addEventListener('input', debounce(inputHandler, DEBOUNCE_DELAY));
 
@@ -14,7 +26,7 @@ function inputHandler(e) {
   console.log('~ inputValue:', ` ~ ${inputValue} ~ `);
 
   if (inputValue.length === 0) {
-    Notify.info(`Enter something`);
+    Notiflix.Notify.info(`Enter something`);
     clearCountryListCard();
     clearCountryCard();
   }
@@ -22,10 +34,10 @@ function inputHandler(e) {
   fetch(`${BASE_URL}${inputValue}`)
     .then(res => {
       if (!res.ok) {
-        Notify.info(`Oops, there is no country with that name`);
+        Notiflix.Notify.info(`Oops, there is no country with that name`);
         clearCountryListCard();
 
-        // throw Error(`is not ok: ` + res.status);
+        // throw Error(`is not ok: ` + res.status); // аналог
         return res.json().then(error => Promise.reject(error));
       }
       return res.json();
@@ -41,7 +53,7 @@ function renderRequest(countries) {
   console.log(`FOUND ${countries.length} match(-es) ✔`);
 
   if (countries.length > 10) {
-    Notify.info(`Too many matches found. Please enter a more specific name.`);
+    Notiflix.Notify.info(`Too many matches found. Please enter a more specific name.`);
 
     clearCountryListCard();
     return;
